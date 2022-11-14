@@ -1,0 +1,70 @@
+.board {
+    width: 500px;
+    height: 500px;
+
+    display: flex;
+    flex-direction: column;
+
+    --board-color: #FFF
+}
+
+.board .bl {
+    border-left: 0.3em solid var(--board-color);
+}
+
+.board .br {
+    border-right: 0.3em solid var(--board-color);
+}
+
+.board .bb {
+    border-bottom: 0.3em solid var(--board-color);
+}
+
+.board .bt {
+    border-top: 0.3em solid var(--board-color);
+}
+
+.board .row {
+    flex: 1;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.board .cell {
+    flex: 1;
+    position: relative;
+}
+
+.board .x::before,.x::after {
+    position: absolute;
+    top: 45%;
+    left: 5%;
+
+    content: "";
+    background-color: var(--board-color);
+    display: block;
+
+    width: 90%;
+    height: 0.8em;
+    border-radius: 1em;
+}
+
+.board .x::before {
+    transform: rotate(-45deg);
+}
+
+.board .x::after {
+    transform: rotate(45deg);
+}
+
+.board .o {
+    position: absolute;
+    left: 12.5%;
+    top: 12.5%;
+
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    border: 0.7em solid var(--board-color)
+}
