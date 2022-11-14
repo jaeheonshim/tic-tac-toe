@@ -3,7 +3,7 @@ import Board from './Board';
 import shake from './util/shake';
 import "./App.css"
 import { getWinner, toPlay } from './board/boardutil';
-import { minimax } from './board/AI';
+import { evalBoard, minimax } from './board/AI';
 
 const StatusTexts = {
   X_PLAY: "X to play",
@@ -22,6 +22,22 @@ function App() {
     [0, 0, 0],
     [0, 0, 0]
   ]);
+
+  const getEvalText = (outcome, play) => {
+    if(outcome.score === 1 || outcome.score === -1) {
+      if(play == 1) {
+        return `X ${outcome.score === 1 ? "wins" : "loses"} in ${outcome.depth} moves`;
+      } else {
+        return `O ${outcome.score === 1 ? "loses" : "wins"} in ${outcome.depth} moves`;
+      }
+    } else {
+      if(play == 1) {
+        return `X draws in ${outcome.depth} moves`;
+      } else {
+        return `O draws in ${outcome.depth} moves`;
+      }
+    }
+  }
 
   const place = (r, c, player) => {
     const newBoard = [[...board[0]], [...board[1]], [...board[2]]];
@@ -43,7 +59,7 @@ function App() {
       setStatusText(StatusTexts.O_PLAY);
     }
 
-    console.log(minimax(newBoard, play === 1));
+    console.log(getEvalText(evalBoard(newBoard), play));
   }
 
   const onBoardClick = (r, c) => {
@@ -58,8 +74,8 @@ function App() {
 
   return (
     <div className="App">
-      <Board boardRef={boardRef} board={board} onClick={onBoardClick} />
       <div id="status-text">{statusText}</div>
+      <Board boardRef={boardRef} board={board} onClick={onBoardClick} />
     </div>
   );
 }

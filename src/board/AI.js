@@ -1,4 +1,4 @@
-import { getWinner } from "./boardutil";
+import { getWinner, toPlay } from "./boardutil";
 
 // X always maximizes, O always minimizes
 
@@ -48,4 +48,8 @@ const minimax = (board, maximizing, alpha = -Infinity, beta = Infinity, depth = 
     return extremeResult;
 }
 
-export {minimax}
+const evalBoard = (board) => {
+    return minimax(board, toPlay(board) == 1);
+}
+
+export {minimax, evalBoard}
