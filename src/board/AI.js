@@ -2,16 +2,18 @@ import { getWinner, toPlay } from "./boardutil";
 
 // X always maximizes, O always minimizes
 
-const minimax = (board, maximizing, alpha = -Infinity, beta = Infinity, depth = 0) => {
+const minimax = (board, maximizing, boardPath = null, alpha = -Infinity, beta = Infinity, depth = 0) => {
     const winner = getWinner(board);
     if(winner) {
         if(winner === 1 || winner === -1) return { // '===' very important lol
             score: winner,
-            depth: depth
+            depth: depth,
+            boardPath: boardPath
         }
         else return {
             score: 0,
-            depth: depth
+            depth: depth,
+            boardPath: boardPath
         }
     }
 
@@ -24,7 +26,7 @@ const minimax = (board, maximizing, alpha = -Infinity, beta = Infinity, depth = 
 
             const temp = board[r][c];
             board[r][c] = maximizing ? 1 : -1;
-            const result = minimax(board, !maximizing, alpha, beta, depth + 1);
+            const result = minimax(board, !maximizing, boardPath && [...boardPath, JSON.parse(JSON.stringify(board))], alpha, beta, depth + 1);
             const score = result.score;
             board[r][c] = temp;
 
@@ -49,8 +51,8 @@ const minimax = (board, maximizing, alpha = -Infinity, beta = Infinity, depth = 
     return extremeResult;
 }
 
-const evalBoard = (board) => {
-    return minimax(board, toPlay(board) == 1);
+const evalBoard = (board, path = null) => {
+    return minimax(board, toPlay(board) == 1, path);
 }
 
 const evalPossibleMoves = (board) => {
@@ -63,7 +65,7 @@ const evalPossibleMoves = (board) => {
 
             const temp = board[r][c];
             board[r][c] = play;
-            const result = evalBoard(board);
+            const result = evalBoard(board, [JSON.parse(JSON.stringify(board))]);
             board[r][c] = temp;
 
             possibleMoves.push({
