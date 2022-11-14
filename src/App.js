@@ -117,6 +117,14 @@ function App() {
 
   function place(r, c, player) {
     const newBoard = [[...board[0]], [...board[1]], [...board[2]]];
+    for(let r = 0; r < 3; ++r) {
+      for(let c = 0; c < 3; ++c) {
+        if(newBoard[r][c] % 2 == 0) {
+          newBoard[r][c] = 0;
+        }
+      }
+    }
+
     newBoard[r][c] = player;
     setBoard(newBoard);
 
