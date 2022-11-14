@@ -20,12 +20,13 @@ const minimax = (board, maximizing, alpha = -Infinity, beta = Infinity, depth = 
         
     for(let r = 0; r < 3; ++r) {
         for(let c = 0; c < 3; ++c) {
-            if(board[r][c] !== 0) continue;
+            if(board[r][c] === 1 || board[r][c] === -1) continue;
 
+            const temp = board[r][c];
             board[r][c] = maximizing ? 1 : -1;
             const result = minimax(board, !maximizing, alpha, beta, depth + 1);
             const score = result.score;
-            board[r][c] = 0;
+            board[r][c] = temp;
 
             if(maximizing) {
                 if(score > extrema || (score >= extrema && result.depth < extremeResult.depth)) {
@@ -52,4 +53,43 @@ const evalBoard = (board) => {
     return minimax(board, toPlay(board) == 1);
 }
 
-export {minimax, evalBoard}
+const evalPossibleMoves = (board) => {
+    const possibleMoves = [];
+    const play = toPlay(board);
+ 
+    for(let r = 0; r < 3; ++r) {
+        for(let c = 0; c < 3; ++c) {
+            if(board[r][c] === 1 || board[r][c] === -1) continue;
+
+            const temp = board[r][c];
+            board[r][c] = play;
+            const result = evalBoard(board);
+            board[r][c] = temp;
+
+            possibleMoves.push({
+                r: r,
+                c: c,
+                ...result
+            })
+        }
+    }
+
+    return possibleMoves;
+}
+
+const evalBestMove = (board) => {
+    const possibleMoves = evalPossibleMoves(board);
+    const play = toPlay(board);
+    
+    let bestMove = possibleMoves[0];
+    for(const move of possibleMoves) {
+        if((play == 1 && (move.score > bestMove.score || (move.score >= bestMove.score && move.depth < bestMove.depth)))
+        || (play == -1 && (move.score < bestMove.score || (move.score <= bestMove.score && move.depth < bestMove.depth)))) {
+            bestMove = move;
+        }
+    }
+
+    return bestMove;
+}
+
+export {minimax, evalBoard, evalPossibleMoves, evalBestMove}

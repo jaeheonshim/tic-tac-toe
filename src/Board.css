@@ -1,11 +1,12 @@
 .board {
-    width: 500px;
-    height: 500px;
+    margin-left: auto;
+    margin-right: auto;
 
     display: flex;
     flex-direction: column;
 
     --board-color: #FFF;
+    --board-faded-color: #35383b;
     --animation-duration: 0.15s;
     --animation-timing-function: ease-in;
 }
@@ -36,6 +37,14 @@
 .board .cell {
     flex: 1;
     position: relative;
+}
+
+.board .x.faded::before, .x.faded::after {
+    background-color: var(--board-faded-color);
+}
+
+.board .o.faded {
+    border-color: var(--board-faded-color);
 }
 
 .board .x::before,.x::after {

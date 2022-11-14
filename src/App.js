@@ -1,9 +1,9 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Board from './Board';
 import shake from './util/shake';
 import "./App.css"
 import { getWinner, toPlay } from './board/boardutil';
-import { evalBoard, minimax } from './board/AI';
+import { evalBestMove, evalBoard, minimax } from './board/AI';
 
 const StatusTexts = {
   X_PLAY: "X to play",
@@ -16,14 +16,25 @@ const StatusTexts = {
 function App() {
   const boardRef = useRef(null);
 
-  const [statusText, setStatusText] = useState(StatusTexts.X_PLAY)
+  const [options, setOptions] = useState({
+    aiEvaluation: true,
+    showBestMove: true
+  });
+
   const [board, setBoard] = useState([
     [0, 0, 0],
     [0, 0, 0],
     [0, 0, 0]
   ]);
+  const [statusText, setStatusText] = useState(StatusTexts.X_PLAY);
+  const [evalText, setEvalText] = useState(getEvalText(evalBoard(board), toPlay(board)));
 
-  const getEvalText = (outcome, play) => {
+  useEffect(() => {
+    const newBoard = [[...board[0]], [...board[1]], [...board[2]]];
+    hintBestMove(newBoard, 1);
+  }, []);
+
+  function getEvalText(outcome, play) {
     if(outcome.score === 1 || outcome.score === -1) {
       if(play == 1) {
         return `X ${outcome.score === 1 ? "wins" : "loses"} in ${outcome.depth} moves`;
@@ -39,7 +50,14 @@ function App() {
     }
   }
 
-  const place = (r, c, player) => {
+  function hintBestMove(board, toPlay) {
+    const bestMove = evalBestMove(board);
+    board[bestMove.r][bestMove.c] = toPlay * 2;
+
+    setBoard(board);
+  }
+
+  function place(r, c, player) {
     const newBoard = [[...board[0]], [...board[1]], [...board[2]]];
     newBoard[r][c] = player;
     setBoard(newBoard);
@@ -59,13 +77,14 @@ function App() {
       setStatusText(StatusTexts.O_PLAY);
     }
 
-    console.log(getEvalText(evalBoard(newBoard), play));
+    setEvalText(getEvalText(evalBoard(newBoard), play));
+    hintBestMove(newBoard, play);
   }
 
   const onBoardClick = (r, c) => {
     if(getWinner(board)) return;
 
-    if(board[r][c] == 0) {
+    if(board[r][c] == 0 || board[r][c] % 2 == 0) {
       place(r, c, toPlay(board));
     } else {
       shake(boardRef.current);
@@ -74,8 +93,12 @@ function App() {
 
   return (
     <div className="App">
-      <div id="status-text">{statusText}</div>
-      <Board boardRef={boardRef} board={board} onClick={onBoardClick} />
+      <div className="bubble-text" style={{fontSize: "1.5em"}}>{statusText}</div>
+      <Board style={{width: "40vw", height: "40vw"}} boardRef={boardRef} board={board} onClick={onBoardClick} hints={options.showBestMove} />
+      {options.aiEvaluation && <div className="bubble-text">Given optimal play, <b>{evalText}</b></div>}
+      <div>
+
+      </div>
     </div>
   );
 }
