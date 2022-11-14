@@ -2,44 +2,50 @@ import { getWinner } from "./boardutil";
 
 // X always maximizes, O always minimizes
 
-const minimax_ABPrune = (board, maximizing, alpha, beta) => {
+const minimax = (board, maximizing, alpha = -Infinity, beta = Infinity, depth = 0) => {
     const winner = getWinner(board);
-    if(winner === 1 || winner === -1) return winner; // '===' very important lol
     if(winner) {
-        return 0;
+        if(winner === 1 || winner === -1) return { // '===' very important lol
+            score: winner,
+            depth: depth
+        }
+        else return {
+            score: 0,
+            depth: depth
+        }
     }
 
     let extrema = maximizing ? -Infinity : Infinity;
+    let extremeResult = null;
         
     for(let r = 0; r < 3; ++r) {
         for(let c = 0; c < 3; ++c) {
             if(board[r][c] !== 0) continue;
 
             board[r][c] = maximizing ? 1 : -1;
-            const score = minimax(board, !maximizing, alpha, beta);
+            const result = minimax(board, !maximizing, alpha, beta, depth + 1);
+            const score = result.score;
             board[r][c] = 0;
 
             if(maximizing) {
-                if(score > extrema) {
+                if(score > extrema || (score >= extrema && result.depth < extremeResult.depth)) {
                     alpha = score;
                     extrema = score;
+                    extremeResult = result;
                     if(beta <= score) break;
                 }
             } else {
-                if(score < extrema) {
+                if(score < extrema || (score <= extrema && result.depth < extremeResult.depth)) {
                     beta = score;
                     extrema = score;
+                    extremeResult = result;
                     if(score <= alpha) break;
                 }
             }
         }
     }
 
-    return extrema;
-}
-
-const minimax = (board, maximizing) => {
-    return minimax_ABPrune(board, maximizing, -Infinity, Infinity);
+    return extremeResult;
 }
 
 export {minimax}
