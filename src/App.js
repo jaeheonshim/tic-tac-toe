@@ -3,6 +3,7 @@ import Board from './Board';
 import shake from './util/shake';
 import "./App.css"
 import { getWinner, toPlay } from './board/boardutil';
+import { minimax } from './board/AI';
 
 const StatusTexts = {
   X_PLAY: "X to play",
@@ -30,17 +31,19 @@ function App() {
     const winner = getWinner(newBoard);
     const play = toPlay(newBoard);
 
-    if(winner && winner == 1) {
+    if(winner === 1) {
       setStatusText(StatusTexts.X_WINS);
-    } else if(winner && winner == -1) {
+    } else if(winner === -1) {
       setStatusText(StatusTexts.O_WINS);
     } else if(winner) {
       setStatusText(StatusTexts.DRAW);
-    } else if(play == 1) {
+    } else if(play === 1) {
       setStatusText(StatusTexts.X_PLAY);
-    } else if(play == -1) {
+    } else if(play === -1) {
       setStatusText(StatusTexts.O_PLAY);
     }
+
+    console.log(minimax(newBoard, play === 1));
   }
 
   const onBoardClick = (r, c) => {

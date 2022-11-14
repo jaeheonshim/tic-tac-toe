@@ -7,7 +7,7 @@ export function getWinner(board) {
     if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[2][2] != 0) return board[0][0];
     if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[2][0] != 0) return board[0][2];
 
-    const reduce = (l) => l.reduce((p, c) => p + c, 0);
+    const reduce = (l) => l.reduce((p, c) => p + Math.abs(c), 0);
     const sum = reduce(board[0]) + reduce(board[1]) + reduce(board[2]);
 
     if (sum == 9) return true;
