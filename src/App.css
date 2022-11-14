@@ -1,0 +1,8 @@
+#status-text {
+    display: inline-block;
+
+    color: white;
+    background-color: #454a55;
+    padding: 0.3em 2.25em;
+    border-radius: 0.8em;
+}
