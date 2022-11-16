@@ -83,7 +83,23 @@ const evalBestMove = (board) => {
     const possibleMoves = evalPossibleMoves(board);
     const play = toPlay(board);
     
+    const scores = possibleMoves.map(m => m.score);
+    const bestOutcome = play == 1 ? Math.max(...scores) : Math.min(...scores);
+
     let bestMove = possibleMoves[0];
+
+    // if best we can do is a loss, take the longest path there
+    if(play == 1 && bestOutcome == -1 || play == -1 && bestOutcome == 1) {
+        console.log("Failure state")
+        for(const move of possibleMoves) {
+            if(move.depth > bestMove.depth) {
+                bestMove = move;
+            }
+        }
+
+        return bestMove;
+    }
+
     for(const move of possibleMoves) {
         if((play == 1 && (move.score > bestMove.score || (move.score >= bestMove.score && move.depth < bestMove.depth)))
         || (play == -1 && (move.score < bestMove.score || (move.score <= bestMove.score && move.depth < bestMove.depth)))) {
